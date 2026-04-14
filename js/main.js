@@ -188,4 +188,105 @@ document.addEventListener('DOMContentLoaded', () => {
         observer.observe(counter);
     });
 
+    // ─── Initialize Floating Widgets (WhatsApp & AI Receptionist) ─
+    initFloatingWidgets();
+
+    function initFloatingWidgets() {
+        // WhatsApp Widget
+        const waWidget = document.createElement('a');
+        waWidget.href = "https://wa.me/441234567890";
+        waWidget.className = "floating-wa-btn";
+        waWidget.target = "_blank";
+        waWidget.innerHTML = '<i class="fab fa-whatsapp"></i>';
+        document.body.appendChild(waWidget);
+
+        // AI Receptionist Widget
+        const botBtn = document.createElement('button');
+        botBtn.className = "floating-bot-btn";
+        botBtn.innerHTML = '<i class="fas fa-robot"></i>';
+        
+        const chatWindow = document.createElement('div');
+        chatWindow.className = "chat-window";
+        chatWindow.innerHTML = `
+            <div class="chat-header">
+                <span>AI Receptionist</span>
+                <button id="close-chat-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="chat-body" id="chat-body">
+                <div class="chat-message bot">Hello! I'm the Eye Clinic AI Receptionist. You can text me or click the microphone to speak to me. How can I help you today?</div>
+            </div>
+            <div class="chat-footer">
+                <button id="voice-chat-btn" class="voice-btn"><i class="fas fa-microphone"></i></button>
+                <input type="text" id="chat-input" placeholder="Type a message...">
+                <button id="send-chat-btn" class="send-btn"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        `;
+
+        document.body.appendChild(botBtn);
+        document.body.appendChild(chatWindow);
+
+        botBtn.addEventListener('click', () => {
+            chatWindow.classList.toggle('active');
+        });
+
+        document.getElementById('close-chat-btn').addEventListener('click', () => {
+            chatWindow.classList.remove('active');
+        });
+
+        const sendBtn = document.getElementById('send-chat-btn');
+        const chatInput = document.getElementById('chat-input');
+        const chatBody = document.getElementById('chat-body');
+        const voiceBtn = document.getElementById('voice-chat-btn');
+
+        function appendMessage(text, sender) {
+            const msgList = document.createElement('div');
+            msgList.className = 'chat-message ' + sender;
+            msgList.innerText = text;
+            chatBody.appendChild(msgList);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        sendBtn.addEventListener('click', () => {
+            const text = chatInput.value.trim();
+            if (text) {
+                appendMessage(text, 'user');
+                chatInput.value = '';
+                
+                // AI Response delay dummy
+                setTimeout(() => {
+                    appendMessage("Thank you for reaching out! An agent will be with you shortly, or you can call us directly on 01234 567 890 to speak with someone right away.", 'bot');
+                }, 1000);
+            }
+        });
+
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendBtn.click();
+        });
+
+        // Dummy Voice Logic
+        let isRecording = false;
+        voiceBtn.addEventListener('click', () => {
+            isRecording = !isRecording;
+            if (isRecording) {
+                voiceBtn.classList.add('recording');
+                appendMessage("Listening...", 'bot-status');
+            } else {
+                voiceBtn.classList.remove('recording');
+                const statusMsg = chatBody.querySelector('.bot-status');
+                if(statusMsg) statusMsg.remove();
+                appendMessage("Audio recorded. Processing...", 'bot-status');
+                setTimeout(() => {
+                    const sMsg = chatBody.querySelector('.bot-status');
+                    if(sMsg) sMsg.remove();
+                    appendMessage("I understood you mentioned an eye condition. Our clinic treats myopia, astigmatism, presbyopia, and hypermetropia. Would you like to set up an appointment?", 'bot');
+                    
+                    // Simple text-to-speech for dummy output
+                    if ('speechSynthesis' in window) {
+                        const msg = new SpeechSynthesisUtterance("I understood you mentioned an eye condition. Our clinic treats myopia, astigmatism, presbyopia, and hypermetropia. Would you like to set up an appointment?");
+                        window.speechSynthesis.speak(msg);
+                    }
+                }, 1500);
+            }
+        });
+    }
 });
