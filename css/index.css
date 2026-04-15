@@ -1348,14 +1348,11 @@ footer {
 
 .footer-legal {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
 }
 
-.footer-legal span {
-    font-size: 12px;
-    opacity: 0.6;
-}
+
 
 .footer-social-bottom {
     display: flex;
