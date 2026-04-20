@@ -1,0 +1,9 @@
+{
+  "name": "eye-clinic-rebranded",
+  "version": 2,
+  "public": true,
+  "rewrites": [
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/booking", "destination": "/booking.html" }
+  ]
+}
