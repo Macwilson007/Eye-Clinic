@@ -188,13 +188,41 @@
         }
         @media (max-width: 768px) {
             .admin-sidebar {
-                width: 70px;
-                padding: 20px 10px;
+                left: -var(--sidebar-width);
+                transition: transform 0.3s ease;
+                width: var(--sidebar-width);
             }
-            .admin-nav li a span { display: none; }
-            .admin-nav li a i { font-size: 1.2rem; }
-            .admin-main { margin-left: 70px; padding: 20px; }
+            .admin-sidebar.mobile-active {
+                transform: translateX(var(--sidebar-width));
+            }
+            .admin-main { 
+                margin-left: 0 !important; 
+                padding: 20px;
+                padding-top: 70px;
+            }
             .stats-grid { grid-template-columns: 1fr; }
+            .mobile-admin-toggle {
+                display: flex !important;
+            }
+            .admin-header h1 {
+                font-size: 1.5rem;
+            }
+        }
+        .mobile-admin-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+            background: var(--primary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
     </style>
 </head>
@@ -211,6 +239,11 @@
                 <p style="margin-top: 15px; font-size: 0.8rem; color: var(--gray);">Default password: admin123</p>
             </form>
         </div>
+    </div>
+
+    <!-- Mobile Toggle -->
+    <div class="mobile-admin-toggle" id="mobile-toggle" style="display: none;">
+        <i class="fas fa-bars"></i>
     </div>
 
     <!-- Sidebar -->
@@ -324,6 +357,7 @@
                     loginScreen.style.display = 'none';
                     sidebar.style.display = 'flex';
                     mainContent.style.display = 'block';
+                    document.getElementById('mobile-toggle').style.display = 'flex';
                     loadBookings();
                 } else {
                     alert('Incorrect password!');
@@ -335,7 +369,29 @@
                 loginScreen.style.display = 'flex';
                 sidebar.style.display = 'none';
                 mainContent.style.display = 'none';
+                document.getElementById('mobile-toggle').style.display = 'none';
                 document.getElementById('admin-pass').value = '';
+            });
+
+            // Mobile Toggle Logic
+            const mobileToggle = document.getElementById('mobile-toggle');
+            mobileToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('mobile-active');
+                const icon = mobileToggle.querySelector('i');
+                icon.classList.toggle('fa-bars');
+                icon.classList.toggle('fa-times');
+            });
+
+            // Close sidebar when clicking a link on mobile
+            sidebar.querySelectorAll('.admin-nav a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('mobile-active');
+                        const icon = mobileToggle.querySelector('i');
+                        icon.classList.add('fa-bars');
+                        icon.classList.remove('fa-times');
+                    }
+                });
             });
 
             // Refresh
