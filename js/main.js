@@ -16,9 +16,13 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.classList.toggle('menu-open');
         });
 
-        // Close menu when a link is clicked
+        // Close menu when a link is clicked (unless it's a dropdown toggle on mobile)
         navLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
+            link.addEventListener('click', (e) => {
+                if (window.innerWidth <= 992 && link.parentElement.classList.contains('nav-dropdown')) {
+                    // Let the dropdown toggle handle it
+                    return;
+                }
                 hamburger.classList.remove('active');
                 navLinks.classList.remove('mobile-open');
                 document.body.classList.remove('menu-open');
